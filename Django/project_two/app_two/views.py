@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from app_two.models import User
+from app_two import forms
 
 
 def index(request):
@@ -13,6 +13,11 @@ def help_page(request):
 
 
 def users(request):
-    user_data = User.objects.order_by('last_name')
-    user_dict = {'user_data': user_data}
-    return render(request, 'app_two/users.html', context=user_dict)
+    form = forms.UserInput()
+    if request.method == 'POST':
+        form = forms.UserInput(request.POST)
+
+        if form.is_valid():
+            form.save(commit=True)
+
+    return render(request, 'app_two/users.html', context={'form': form})
